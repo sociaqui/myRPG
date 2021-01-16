@@ -1,5 +1,8 @@
 <?php
 
+namespace UI;
+
+
 /**
  * Class BasicCommandLineUserInterface
  *

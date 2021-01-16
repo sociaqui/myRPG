@@ -1,5 +1,7 @@
 <?php
 
+namespace Character;
+
 
 class WildBeast extends AbstractGameCharacter
 {

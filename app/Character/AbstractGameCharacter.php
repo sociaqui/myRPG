@@ -1,5 +1,7 @@
 <?php
 
+namespace Character;
+
 
 abstract class AbstractGameCharacter implements GameCharacterInterface
 {

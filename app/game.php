@@ -1,12 +1,22 @@
 <?php
 
+//simple Class Autoloader
+spl_autoload_register(function ($class_name) {
+    include $class_name . '.php';
+});
+
+use UI\BasicCommandLineUserInterface as UserInterface;
+use Engine\ImpartialReferee as GameEngine;
+use Character\Orderus as Hero;
+use Character\WildBeast as Beast;
+
 //Initialize Environment
 /**
  * load all the classes, set any environmental variables etc.
  *
  * Some Greeting? or Menu? for the player
  */
-echo 'Hello!' . PHP_EOL . PHP_EOL;
+UserInterface::intro();
 
 // Looped battle sequence
 do {

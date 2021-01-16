@@ -1,5 +1,7 @@
 <?php
 
+namespace Engine;
+
 
 class ImpartialReferee
 {

@@ -1,5 +1,7 @@
 <?php
 
+namespace Character;
+
 
 interface GameCharacterInterface
 {

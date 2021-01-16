@@ -1,5 +1,8 @@
 <?php
 
+namespace UI;
+
+
 /**
  * Interface BasicUserInterface
  *

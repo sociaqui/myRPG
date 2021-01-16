@@ -1,5 +1,7 @@
 <?php
 
+namespace Character;
+
 
 class Orderus extends AbstractGameCharacter
 {
