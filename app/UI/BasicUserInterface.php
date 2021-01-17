@@ -27,30 +27,30 @@ interface BasicUserInterface
 
     /**
      * Display a message to the user
-     * @param $message string The mesage to be displayed.
+     * @param string $message The mesage to be displayed.
      * @return null
      */
     public static function message(string $message);
 
     /**
      * Get confirmation from the user
-     * @param $prompt string | null Specify an (optional) string with which to prompt the user.
+     * @param string | null $prompt Specify an (optional) string with which to prompt the user.
      * @return bool
      */
-    public static function confirmation(string $prompt = null);
+    public static function confirmation(?string $prompt);
 
     /**
      * Get an answer to an open choice question from the user
-     * @param $question string | null Specify a question with which to prompt the user.
+     * @param string $question Specify a question with which to prompt the user.
      * @return string
      */
     public static function ask(string $question);
 
     /**
      * Get an answer to a closed choice question from the user
-     * @param $question string | null Specify a question with which to prompt the user.
-     * @param $options array Specify the possible options / answers.
+     * @param string | null $question Specify an (optional) question with which to prompt the user.
+     * @param array $options Specify the possible options / answers.
      * @return string
      */
-    public static function getOption(string $question, array $options);
+    public static function getOption(?string $question, array $options);
 }

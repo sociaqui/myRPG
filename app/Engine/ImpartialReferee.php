@@ -2,23 +2,24 @@
 
 namespace Engine;
 
+use Character\AbstractGameCharacter;
 
 class ImpartialReferee
 {
     /**
      * Check if given skill / trait / special event based on luck will take place
-     * @param $luck
+     * @param int $luck
      * @return bool
      */
-    public static function proc($luck)
+    public static function proc(int $luck)
     {
         return $luck >= rand(0,100);
     }
 
     /**
      * Enact a single turn of combat
-     * @param $attacker AbstractGameCharacter the attacking character
-     * @param $defender AbstractGameCharacter the defending character
+     * @param AbstractGameCharacter $attacker the attacking character
+     * @param AbstractGameCharacter $defender the defending character
      * @return bool
      */
     public static function enactTurn(AbstractGameCharacter $attacker, AbstractGameCharacter $defender)

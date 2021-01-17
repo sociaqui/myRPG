@@ -25,7 +25,7 @@ class BasicCommandLineUserInterface implements BasicUserInterface
         // TODO: Implement the actual logic.
     }
 
-    public static function confirmation(string $prompt = null)
+    public static function confirmation(?string $prompt)
     {
         // TODO: Implement the actual logic.
     }
@@ -35,7 +35,7 @@ class BasicCommandLineUserInterface implements BasicUserInterface
         // TODO: Implement the actual logic.
     }
 
-    public static function getOption(string $question, array $options)
+    public static function getOption(?string $question, array $options)
     {
         // TODO: Implement the actual logic.
     }

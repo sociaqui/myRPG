@@ -34,7 +34,7 @@ do {
      */
     echo '[who] goes first' . PHP_EOL;
 
-    //Single Battle Loop - 20 turns
+    //Single Battle Loop = 20 turns
     for ($i = 1; $i <= 20; $i++) {
         echo '(' . $i . ') [who\'s] turn' . PHP_EOL;
     }

@@ -8,7 +8,7 @@ interface GameCharacterInterface
     const OFFENSIVE_SKILLS = [
         'double' => [
             'name' => 'Rapid Strike',
-            'description' => 'Strike twice during a single attack; there’s a 10% chance to use this skill on every attack',
+            'description' => 'Strike twice during a single attack; there\'s a 10% chance to use this skill on every attack',
             'catchphrase' => '"If at first you don\'t succeed, hit them again."',
             'chance' => 10,
         ]
@@ -30,7 +30,7 @@ interface GameCharacterInterface
 
     /**
      * Lower Character health parameter
-     * @param $damage int Specify the amount of damage dealt to the Character
+     * @param int $damage Specify the amount of damage dealt to the Character
      * @return int Return the amount of health remaining after the attack
      */
     public function inflictWound(int $damage);
