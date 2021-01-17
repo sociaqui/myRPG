@@ -60,6 +60,38 @@ interface GameCharacterInterface
     public function getLuck();
 
     /**
+     * Alter Character strength property
+     * @param int $value
+     * @param string | null $method (default method 'absolute', only other supported alternative is 'relative')
+     * @return self
+     */
+    public function alterStrength(int $value, ?string $method = 'absolute');
+
+    /**
+     * Alter Character strength property
+     * @param int $value
+     * @param string | null $method (default method 'absolute', only other supported alternative is 'relative')
+     * @return self
+     */
+    public function alterDefence(int $value, ?string $method = 'absolute');
+
+    /**
+     * Alter Character strength property
+     * @param int $value
+     * @param string | null $method (default method 'absolute', only other supported alternative is 'relative')
+     * @return self
+     */
+    public function alterSpeed(int $value, ?string $method = 'absolute');
+
+    /**
+     * Alter Character strength property
+     * @param int $value
+     * @param string | null $method (default method 'absolute', only other supported alternative is 'relative')
+     * @return self
+     */
+    public function alterLuck(int $value, ?string $method = 'absolute');
+
+    /**
      * Get Character Offensive Abilities
      * @return array Empty if none present
      */

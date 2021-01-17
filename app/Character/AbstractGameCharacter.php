@@ -91,6 +91,26 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
         // TODO: Implement getLuck() method.
     }
 
+    public function alterStrength(int $value, ?string $method = 'absolute')
+    {
+        // TODO: Implement alterStrength() method.
+    }
+
+    public function alterDefence(int $value, ?string $method = 'absolute')
+    {
+        // TODO: Implement alterDefence() method.
+    }
+
+    public function alterSpeed(int $value, ?string $method = 'absolute')
+    {
+        // TODO: Implement alterSpeed() method.
+    }
+
+    public function alterLuck(int $value, ?string $method = 'absolute')
+    {
+        // TODO: Implement alterLuck() method.
+    }
+
     /**
      * @inheritDoc
      */
