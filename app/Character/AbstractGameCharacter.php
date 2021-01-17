@@ -3,6 +3,8 @@
 namespace Character;
 
 
+use Engine\ImpartialReferee;
+
 abstract class AbstractGameCharacter implements GameCharacterInterface
 {
     const MIN_HEALTH = 0;
@@ -15,6 +17,8 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
     const MAX_SPEED = 0;
     const MIN_LUCK = 0;
     const MAX_LUCK = 0;
+
+    const NAME = 'Unknown';
 
     const OFFENSIVE_ABILITIES = [];
     const DEFENSIVE_ABILITIES = [];
@@ -50,7 +54,7 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
     {
         // generate a semi-random hit message
         $plainHitMessages = [' hits ', ' slaps ', ' stabs ', ' kicks ', ' punches '];
-        $message = explode(DIRECTORY_SEPARATOR,static::class)[1] . $plainHitMessages[rand(0, count($plainHitMessages))];
+        $message = static::NAME . $plainHitMessages[rand(0, count($plainHitMessages)-1)];
 
         // generate a single hit
         $singleHit = [
@@ -75,7 +79,7 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
                     // TODO: Implement this steps carefully. This might be a bit more tricky than I originally anticipated.
                     break;
                 case 'criticalHit':
-                    // TODO: Implement this logic. Just a placeholder to showcase possibilities for now.
+                    // TODO: Implement this logic. Just a placeholder to showcase future possibilities for now.
                     break;
             }
         }
@@ -88,16 +92,37 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
      */
     public function defend(array $hitList)
     {
-        // TODO: Implement the proper steps
-        return $hitList; //for now
-    }
+        // go over the hit list and apply any relevant defences, also modify the messages approprietly
+        foreach ($hitList['hits'] as $key => $hit) {
+            // remember every character has Defence and every hit damage should be lowered by it
+            $hitList['hits'][$key]['damage'] -= $this->defence;
 
-    /**
-     * @inheritDoc
-     */
-    public function dodge()
-    {
-        // TODO: Implement dodge() method.
+            // finish the attack sentence adding the final calculated damage and the now known defender
+            $hitList['hits'][$key]['messages'][array_key_last($hitList['hits'][$key]['messages'])] .= static::NAME . ' for '.$hitList['hits'][$key]['damage'].' damage.';
+
+            // remember dodge is universally used by all characters and should therefore be applied to all hits even though it's not on any list
+            $chance = self::DEFENSIVE_SKILLS['dodge']['chance'] === 'luck_based' ? $this->luck : self::DEFENSIVE_SKILLS['dodge']['chance'];
+            if (ImpartialReferee::proc($chance)) {
+                $hitList['hits'][$key]['messages'][] = 'but ' . static::NAME . ' dodges so no damage is actually dealt.';
+                $hitList['hits'][$key]['damage'] = 0;
+                // after successfully dodging there is no much sense in looking at the other abilities so...
+                continue;
+            }
+
+            // check for defensive abilities and modify the hit accordingly - used foreach + switch for future scalability
+            foreach (static::DEFENSIVE_ABILITIES as $ability) {
+                switch ($ability) {
+                    case 'halfDamage':
+                        $chance = self::DEFENSIVE_SKILLS['halfDamage']['chance'] === 'luck_based' ? $this->luck : self::DEFENSIVE_SKILLS['halfDamage']['chance'];
+                        // TODO: Implement the proper logic.
+                        break;
+                    case 'returnDamage':
+                        // TODO: Implement this logic. Just a placeholder to showcase future possibilities for now.
+                        break;
+                }
+            }
+        }
+        return $hitList;
     }
 
     /**
@@ -163,7 +188,7 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
      */
     public function alterStrength(int $value, ?string $method = 'absolute')
     {
-        switch ($method){
+        switch ($method) {
             case 'absolute':
                 $this->strength += $value;
                 break;
@@ -179,7 +204,7 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
      */
     public function alterDefence(int $value, ?string $method = 'absolute')
     {
-        switch ($method){
+        switch ($method) {
             case 'absolute':
                 $this->defence += $value;
                 break;
@@ -195,7 +220,7 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
      */
     public function alterSpeed(int $value, ?string $method = 'absolute')
     {
-        switch ($method){
+        switch ($method) {
             case 'absolute':
                 $this->speed += $value;
                 break;
@@ -211,7 +236,7 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
      */
     public function alterLuck(int $value, ?string $method = 'absolute')
     {
-        switch ($method){
+        switch ($method) {
             case 'absolute':
                 $this->luck += $value;
                 break;

@@ -15,4 +15,6 @@ class WildBeast extends AbstractGameCharacter
     const MAX_SPEED = 60;
     const MIN_LUCK = 25;
     const MAX_LUCK = 40;
+
+    const NAME = 'WildBeast';
 }

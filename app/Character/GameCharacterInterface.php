@@ -46,13 +46,6 @@ interface GameCharacterInterface
     public function defend(array $hitList);
 
     /**
-     * Dodge an attack and get no damage - based on own Luck - return true or false depending on whether the move was successful
-     * An attacker can miss their hit and do no damage if the defender gets lucky that turn.
-     * @return bool
-     */
-    public function dodge();
-
-    /**
      * Get Character current health
      * @return int
      */
