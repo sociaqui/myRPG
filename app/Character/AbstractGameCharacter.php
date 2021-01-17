@@ -36,11 +36,68 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
      */
     public function reset()
     {
-        $this->health = rand(static::MIN_HEALTH,static::MAX_HEALTH);
-        $this->strength = rand(static::MIN_STRENGTH,static::MAX_STRENGTH);
-        $this->defence = rand(static::MIN_DEFENCE,static::MAX_DEFENCE);
-        $this->speed = rand(static::MIN_SPEED,static::MAX_SPEED);
-        $this->luck = rand(static::MIN_LUCK,static::MAX_LUCK);
+        $this->health = rand(static::MIN_HEALTH, static::MAX_HEALTH);
+        $this->strength = rand(static::MIN_STRENGTH, static::MAX_STRENGTH);
+        $this->defence = rand(static::MIN_DEFENCE, static::MAX_DEFENCE);
+        $this->speed = rand(static::MIN_SPEED, static::MAX_SPEED);
+        $this->luck = rand(static::MIN_LUCK, static::MAX_LUCK);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function attack()
+    {
+        // generate a semi-random hit message
+        $plainHitMessages = [' hits ', ' slaps ', ' stabs ', ' kicks ', ' punches '];
+        $message = explode(DIRECTORY_SEPARATOR,static::class)[1] . $plainHitMessages[rand(0, count($plainHitMessages))];
+
+        // generate a single hit
+        $singleHit = [
+            'messages' => [$message],
+            'damage' => $this->strength
+        ];
+
+        // create a basic attack - a single hit array with no introductory messages, damage equal to Strength and a simple message
+        $attack = [
+            'introductoryMessages' => [],
+            'hits' => [$singleHit]
+        ];
+
+        // check for offensive abilities and modify the attack accordingly - used foreach + switch for future scalability
+        //TODO: mind how skills interact with each other though - a luck buff should be added before calculating the rest
+        // of the probabilities, a multihit should not proc on the additional hits it created, a Strength buff should
+        // affect all the hits but a critical hit proc should probably be calculated separately for each hit
+        foreach (static::OFFENSIVE_ABILITIES as $ability) {
+            switch ($ability) {
+                case 'doubleHit':
+                    $chance = self::OFFENSIVE_SKILLS['doubleHit']['chance'] === 'luck_based' ? $this->luck : self::OFFENSIVE_SKILLS['doubleHit']['chance'];
+                    // TODO: Implement this steps carefully. This might be a bit more tricky than I originally anticipated.
+                    break;
+                case 'criticalHit':
+                    // TODO: Implement this logic. Just a placeholder to showcase possibilities for now.
+                    break;
+            }
+        }
+
+        return $attack;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function defend(array $hitList)
+    {
+        // TODO: Implement the proper steps
+        return $hitList; //for now
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function dodge()
+    {
+        // TODO: Implement dodge() method.
     }
 
     /**
@@ -48,15 +105,7 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
      */
     public function getHealth()
     {
-        // TODO: Implement getHealth() method.
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function inflictWound(int $damage)
-    {
-        // TODO: Implement inflictWound() method.
+        return $this->health;
     }
 
     /**
@@ -64,7 +113,7 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
      */
     public function getStrength()
     {
-        // TODO: Implement getStrength() method.
+        return $this->strength;
     }
 
     /**
@@ -72,7 +121,7 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
      */
     public function getDefence()
     {
-        // TODO: Implement getDefence() method.
+        return $this->defence;
     }
 
     /**
@@ -80,7 +129,7 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
      */
     public function getSpeed()
     {
-        // TODO: Implement getSpeed() method.
+        return $this->speed;
     }
 
     /**
@@ -88,42 +137,88 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
      */
     public function getLuck()
     {
-        // TODO: Implement getLuck() method.
+        return $this->luck;
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function inflictWound(int $damage)
+    {
+        $this->health -= $damage;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function heal(int $value)
+    {
+        $this->health += $value;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function alterStrength(int $value, ?string $method = 'absolute')
     {
-        // TODO: Implement alterStrength() method.
+        switch ($method){
+            case 'absolute':
+                $this->strength += $value;
+                break;
+            case 'relative':
+                $this->strength *= $value;
+                break;
+        }
+        return $this;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function alterDefence(int $value, ?string $method = 'absolute')
     {
-        // TODO: Implement alterDefence() method.
+        switch ($method){
+            case 'absolute':
+                $this->defence += $value;
+                break;
+            case 'relative':
+                $this->defence *= $value;
+                break;
+        }
+        return $this;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function alterSpeed(int $value, ?string $method = 'absolute')
     {
-        // TODO: Implement alterSpeed() method.
+        switch ($method){
+            case 'absolute':
+                $this->speed += $value;
+                break;
+            case 'relative':
+                $this->speed *= $value;
+                break;
+        }
+        return $this;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function alterLuck(int $value, ?string $method = 'absolute')
     {
-        // TODO: Implement alterLuck() method.
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getOffensiveAbilities()
-    {
-        // TODO: Implement getOffensiveAbilities() method.
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getDefensiveAbilities()
-    {
-        // TODO: Implement getDefensiveAbilities() method.
+        switch ($method){
+            case 'absolute':
+                $this->luck += $value;
+                break;
+            case 'relative':
+                $this->luck *= $value;
+                break;
+        }
+        return $this;
     }
 }
