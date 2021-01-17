@@ -153,7 +153,7 @@ final class OrderusTest extends TestCase
         $ourHeroHpAfter = $ourHero->getHealth();
 
         // check if the damage was properly subtracted from the HP
-        $this->assertEquals($ourHeroHpAfter, $ourHeroHpBefore + 50);
+        $this->assertEquals($ourHeroHpAfter, $ourHeroHpBefore - 50);
     }
 
     public function defenceDataProvider()

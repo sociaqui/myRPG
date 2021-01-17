@@ -146,7 +146,7 @@ final class WildBeastTest extends TestCase
         $ourBeastHpAfter = $ourBeast->getHealth();
 
         // check if the damage was properly subtracted from the HP
-        $this->assertEquals($ourBeastHpAfter, $ourBeastHpBefore + 50);
+        $this->assertEquals($ourBeastHpAfter, $ourBeastHpBefore - 50);
     }
 
     public function defenceDataProvider()
