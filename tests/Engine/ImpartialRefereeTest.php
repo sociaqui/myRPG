@@ -40,33 +40,17 @@ final class ImpartialRefereeTest extends TestCase
         $defenderHpBefore = $defender->getHealth();
 
         // use the enactTurn function
-        $result = ImpartialReferee::enactTurn($attacker, $defender);
+        ImpartialReferee::enactTurn($attacker, $defender);
 
         // get attacker's and defender's HP after the turn
         $attackerHpAfter = $attacker->getHealth();
         $defenderHpAfter = $defender->getHealth();
 
-        // assert that he function always returns a boolean value
-        $this->assertIsBool($result);
-
-        // assert that the attacker's HP is intact (unless you want to introduce some counterattack / reflect skills in the future
+        // assert that the attacker's HP is intact (unless you want to introduce some counterattack / reflect skills in the future)
         $this->assertEquals($attackerHpBefore, $attackerHpAfter);
 
-        // assert that the defender's HP did go down (unless you want to introduce some dodge / immunity skills in the future
+        // assert that the defender's HP did go down or is at least the same (if attack fully dodged - unless you want to introduce some healing skills in the future)
         $this->assertGreaterThan($defenderHpAfter, $defenderHpBefore);
-
-        if ($defenderHpAfter <= 0) {
-            // if the defender' HP dropped to zero or below in this turn, assert that the function returned false (discontinue the combat loop)
-            $this->assertEquals($result, false);
-        } else {
-            // if the defender' HP didn't drop to zero or below in this turn, assert that the function returned true (continue the combat loop)
-            $this->assertEquals($result, true);
-        }
-
-        if(is_bool($expected)){
-            // if the outcome was defined assert that the function returned what you expected
-            $this->assertEquals($result, $expected);
-        }
     }
 
     public function procDataProvider()
@@ -88,7 +72,6 @@ final class ImpartialRefereeTest extends TestCase
         $randomHero2 = new Orderus();
         $randomBeast1 = new WildBeast();
         $randomBeast2 = new WildBeast();
-        $randomBeast3 = new WildBeast();
 
         $criticallyWoundedHero = new Orderus();
         $criticallyWoundedHero->inflictWound(Orderus::MAX_HEALTH); // with no health defeat in 1 turn is certain
@@ -102,15 +85,18 @@ final class ImpartialRefereeTest extends TestCase
         $unbeatableBeast->alterDefence(200); // with Defence over 200 a fully healthy beast cannot be slain in 1 hit
         // (with currently defined offensive skills anyway)
 
+        /**
+         * not checking the outcome of the battle in the enactTurn function anymore anyway, but will leave these thest
+         * cases here in case they become relevant in the future
+         */
+
         return [
             [$randomHero1, $randomBeast1, 'uncertain'], // a typical first turn, in a normal battle, no certain outcome
             [$randomHero1, $randomBeast2, 'uncertain'], // a typical first turn, in a normal battle, no certain outcome
-            [$randomHero1, $randomBeast3, 'uncertain'], // a typical first turn, in a normal battle, no certain outcome
             [$randomHero2, $randomBeast1, 'uncertain'], // a typical first turn, in a normal battle, no certain outcome
             [$randomHero2, $randomBeast2, 'uncertain'], // a typical first turn, in a normal battle, no certain outcome
-            [$randomHero2, $randomBeast3, 'uncertain'], // a typical first turn, in a normal battle, no certain outcome
             [$randomHero1, $randomHero2, 'uncertain'], // hero vs hero? I don't see why not, no certain outcome
-            [$randomBeast1, $randomBeast3, 'uncertain'], // beast vs beast? I don't see why not, no certain outcome
+            [$randomBeast1, $randomBeast2, 'uncertain'], // beast vs beast? I don't see why not, no certain outcome
             [$randomBeast1, $criticallyWoundedHero, false], // hero is badly wounded, battle will end in 1 hit
             [$randomHero1, $criticallyWoundedBeast, false], // beast is badly wounded, battle will end in 1 hit
             [$superPowerfulHero, $randomBeast1, false], // hero is overpowered, battle will end in 1 hit
