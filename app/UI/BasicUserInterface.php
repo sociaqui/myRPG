@@ -10,31 +10,32 @@ namespace UI;
  */
 interface BasicUserInterface
 {
-    const INTRODUCTION_TEXT = 'Hello!';
-    const GOODBYE_TEXT = 'Bye!';
+    const INTRODUCTION_TEXT = ['', '', '           * * * eMAG\'s Hero * * *',
+        'A small, simplistic RPG game by Jarek Sochacki.', '',
+        'Once upon a time there was a great hero, called Orderus,', 'with some strengths and weaknesses, as all heroes have.',
+        'After battling all kinds of monsters for more than a hundred years,', 'Orderus is now embarking on a new journey...', ''];
+    const NEW_ENCOUNTER_TEXT = ['As Orderus walks the ever-green forests of Emagia, he encounters a wild beast!'];
+    const BATTLE_START_TEXT = ['   ~ ~ ~ FIGHT! ~ ~ ~'];
+    const GAME_OVER_TEXT = ['Oh no!', 'Orderus has been slain!', 'GAME OVER', ''];
+    const GOODBYE_TEXT = ['Goodbye!'];
 
     /**
-     * Display the introduction / greeting to the user
+     * Display a multi part message to the user
+     * @param array $message The multi part message to be displayed.
      * @return null
      */
-    public static function intro();
-
-    /**
-     * Display the farewell to the user
-     * @return null
-     */
-    public static function outro();
+    public static function multipartMessage(array $message);
 
     /**
      * Display a message to the user
-     * @param string $message The mesage to be displayed.
+     * @param string $message The message to be displayed.
      * @return null
      */
     public static function message(string $message);
 
     /**
      * Get confirmation from the user
-     * @param string | null $prompt Specify an (optional) string with which to prompt the user.
+     * @param string|null $prompt Specify an (optional) string with which to prompt the user.
      * @return bool
      */
     public static function confirmation(?string $prompt);
@@ -48,7 +49,7 @@ interface BasicUserInterface
 
     /**
      * Get an answer to a closed choice question from the user
-     * @param string | null $question Specify an (optional) question with which to prompt the user.
+     * @param string|null $question Specify an (optional) question with which to prompt the user.
      * @param array $options Specify the possible options / answers.
      * @return string
      */
