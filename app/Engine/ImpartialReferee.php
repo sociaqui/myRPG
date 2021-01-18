@@ -58,8 +58,11 @@ class ImpartialReferee
         $result = $updatedHitList['introductoryMessages'];
 
         foreach ($updatedHitList['hits'] as $hit) {
-            $result[] = $hit['messages'];
             $defender->inflictWound($hit['damage']);
+            foreach ($hit['messages'] as $message) {
+                $result[] = $message;
+            }
+            $result[] = $defender::NAME . ' is left with ' . $defender->getHealth() . ' HP';
         }
 
         $attacker->isNotAboutToAttack();
