@@ -22,8 +22,8 @@ interface BasicUserInterface
         'Orderus has survived, but I would\'t call this a glorious victory.',
         'You may continue but will gain no points for this battle.', ''];
     const GAME_OVER_TEXT = ['         Oh no!', 'Orderus has been killed!', '     * GAME OVER * ', (' [*] R.I.P. Orderus  '), ''];
-    const KILLSTREAK_CONGRATULATORY_TEXT = ['Congratulations! You managed to achieve a Kill Streak of:'];
-    const GOODBYE_TEXT = ['Until next time.', 'Goodbye!', '', ''];
+    const KILLSTREAK_CONGRATULATORY_TEXT = 'Congratulations! You managed to achieve a Kill Streak of: ';
+    const GOODBYE_TEXT = ['See you next time.', 'Goodbye!', '', ''];
 
     /**
      * Display a multi part message to the user

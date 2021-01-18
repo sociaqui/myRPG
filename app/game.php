@@ -70,7 +70,8 @@ do {
 
 //Outro
 //TODO: implement a High Score logic
-UserInterface::multipartMessage(UserInterface::KILLSTREAK_CONGRATULATORY_TEXT);
-UserInterface::message($killStreak);
+if ($killStreak) {
+    UserInterface::message(UserInterface::KILLSTREAK_CONGRATULATORY_TEXT . $killStreak);
+}
 UserInterface::multipartMessage(UserInterface::GOODBYE_TEXT);
 

@@ -9,7 +9,11 @@ interface GameCharacterInterface
         'doubleHit' => [
             'name' => 'Rapid Strike',
             'description' => 'Strike twice during a single attack; there\'s a 10% chance to use this skill on every attack',
-            'catchphrase' => '"If at first you don\'t succeed, hit them again."',
+            'catchphrases' => [
+                '"If at first you don\'t succeed, hit them again."',
+                '"Diplomacy has solved nothing. Only bloodspill can end this now."',
+                '"Make every blow count."',
+            ],
             'chance' => 10,
         ],
     ];
@@ -18,13 +22,21 @@ interface GameCharacterInterface
             'name' => 'dodge',
             'description' => 'Every character has this basic skill; take no damage from an enemy attack;
             there’s a chance based on luck to use this skill on every defence',
-            'catchphrase' => '"Now you see me, now you don\'t."',
+            'catchphrases' => [
+                '"Now you see me, now you don\'t."',
+                '"Catch me if you can."',
+                '"Like a ninja!"',
+            ],
             'chance' => 'luck_based',
         ],
         'halfDamage' => [
             'name' => 'Magic shield',
             'description' => 'Take only half of the usual damage when an enemy attacks; there’s a 20% chance to use this skill on every defence',
-            'catchphrase' => '"We are made stronger by those we fight for."',
+            'catchphrases' => [
+                '"We are made stronger by those we fight for."',
+                '"My faith is my shield."',
+                '"The stalwart shield, the towering sentinel."',
+            ],
             'chance' => 20,
         ],
     ];
@@ -35,6 +47,13 @@ interface GameCharacterInterface
      * @return array
      */
     public function attack();
+
+    /**
+     * Create a single hit - an array consisting of one message chosen at random from a standard collection and an integer value
+     * representing damage done - equal to Character Strength property unless modified by offensive skills
+     * @return array
+     */
+    public function singleHit();
 
     /**
      * Defend against an attack - basically re-calculate the damage done, based on own parameters, special skills etc.

@@ -3,7 +3,7 @@
 namespace Character;
 
 
-use Engine\ImpartialReferee;
+use Engine\ImpartialReferee as GameEngine;
 
 abstract class AbstractGameCharacter implements GameCharacterInterface
 {
@@ -54,20 +54,10 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
      */
     public function attack()
     {
-        // generate a semi-random hit message
-        $plainHitMessages = [' hits ', ' slaps ', ' stabs ', ' kicks ', ' punches '];
-        $message = static::NAME . $plainHitMessages[rand(0, count($plainHitMessages)-1)];
-
-        // generate a single hit
-        $singleHit = [
-            'messages' => [$message],
-            'damage' => $this->strength
-        ];
-
-        // create a basic attack - a single hit array with no introductory messages, damage equal to Strength and a simple message
+        // create a basic attack - an array with introductory messages (empty at first) and hits (just one single hit at first)
         $attack = [
             'introductoryMessages' => [],
-            'hits' => [$singleHit]
+            'hits' => [self::singleHit()]
         ];
 
         // check for offensive abilities and modify the attack accordingly - used foreach + switch for future scalability
@@ -78,7 +68,11 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
             switch ($ability) {
                 case 'doubleHit':
                     $chance = self::OFFENSIVE_SKILLS['doubleHit']['chance'] === 'luck_based' ? $this->luck : self::OFFENSIVE_SKILLS['doubleHit']['chance'];
-                    // TODO: Implement this steps carefully. This might be a bit more tricky than I originally anticipated.
+                    if (GameEngine::proc($chance)) {
+                        $attack['introductoryMessages'][] = static::NAME . ' uses ' . self::OFFENSIVE_SKILLS['doubleHit']['name'];
+                        $attack['introductoryMessages'][] = self::OFFENSIVE_SKILLS['doubleHit']['catchphrases'][rand(0, count(self::OFFENSIVE_SKILLS['doubleHit']['catchphrases']) - 1)];
+                        $attack['hits'][] = self::singleHit();
+                    }
                     break;
                 case 'criticalHit':
                     // TODO: Implement this logic. Just a placeholder to showcase future possibilities for now.
@@ -92,6 +86,24 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
     /**
      * @inheritDoc
      */
+    public function singleHit()
+    {
+        // generate a semi-random hit message
+        $plainHitMessages = [' hits ', ' slaps ', ' stabs ', ' kicks ', ' punches '];
+        $message = static::NAME . $plainHitMessages[rand(0, count($plainHitMessages) - 1)];
+
+        // create a single hit
+        $singleHit = [
+            'messages' => [$message],
+            'damage' => $this->strength
+        ];
+
+        return $singleHit;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function defend(array $hitList)
     {
         // go over the hit list and apply any relevant defences, also modify the messages approprietly
@@ -100,12 +112,13 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
             $hitList['hits'][$key]['damage'] = $hitList['hits'][$key]['damage'] - $this->defence < 0 ? 0 : $hitList['hits'][$key]['damage'] - $this->defence;
 
             // finish the attack sentence adding the final calculated damage and the now known defender
-            $hitList['hits'][$key]['messages'][array_key_last($hitList['hits'][$key]['messages'])] .= static::NAME . ' for '.$hitList['hits'][$key]['damage'].' damage.';
+            $hitList['hits'][$key]['messages'][array_key_last($hitList['hits'][$key]['messages'])] .= static::NAME . ' for ' . $hitList['hits'][$key]['damage'] . ' damage.';
 
             // remember dodge is universally used by all characters and should therefore be applied to all hits even though it's not on any list
             $chance = self::DEFENSIVE_SKILLS['dodge']['chance'] === 'luck_based' ? $this->luck : self::DEFENSIVE_SKILLS['dodge']['chance'];
-            if (ImpartialReferee::proc($chance)) {
+            if (GameEngine::proc($chance)) {
                 $hitList['hits'][$key]['messages'][] = 'but ' . static::NAME . ' dodges so no damage is actually dealt.';
+                $hitList['hits'][$key]['messages'][] = self::DEFENSIVE_SKILLS['dodge']['catchphrases'][rand(0, count(self::DEFENSIVE_SKILLS['dodge']['catchphrases']) - 1)];
                 $hitList['hits'][$key]['damage'] = 0;
                 // after successfully dodging there is no much sense in looking at the other abilities so...
                 continue;
@@ -116,7 +129,11 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
                 switch ($ability) {
                     case 'halfDamage':
                         $chance = self::DEFENSIVE_SKILLS['halfDamage']['chance'] === 'luck_based' ? $this->luck : self::DEFENSIVE_SKILLS['halfDamage']['chance'];
-                        // TODO: Implement the proper logic.
+                        if (GameEngine::proc($chance)) {
+                            $hitList['hits'][$key]['messages'][] = 'but ' . static::NAME . ' uses ' . self::DEFENSIVE_SKILLS['halfDamage']['name'] . ' and damage is halved.';
+                            $hitList['hits'][$key]['messages'][] = self::DEFENSIVE_SKILLS['dodge']['catchphrases'][rand(0, count(self::DEFENSIVE_SKILLS['dodge']['catchphrases']) - 1)];
+                            $hitList['hits'][$key]['damage'] = $hitList['hits'][$key]['damage'] / 2;
+                        }
                         break;
                     case 'returnDamage':
                         // TODO: Implement this logic. Just a placeholder to showcase future possibilities for now.
