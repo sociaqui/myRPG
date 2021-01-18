@@ -96,8 +96,8 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
     {
         // go over the hit list and apply any relevant defences, also modify the messages approprietly
         foreach ($hitList['hits'] as $key => $hit) {
-            // remember every character has Defence and every hit damage should be lowered by it
-            $hitList['hits'][$key]['damage'] -= $this->defence;
+            // remember every character has Defence and every hit damage should be lowered by it (but not under 0, you can't deal negative damage)
+            $hitList['hits'][$key]['damage'] = $hitList['hits'][$key]['damage'] - $this->defence < 0 ? 0 : $hitList['hits'][$key]['damage'] - $this->defence;
 
             // finish the attack sentence adding the final calculated damage and the now known defender
             $hitList['hits'][$key]['messages'][array_key_last($hitList['hits'][$key]['messages'])] .= static::NAME . ' for '.$hitList['hits'][$key]['damage'].' damage.';
