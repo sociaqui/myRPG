@@ -19,7 +19,7 @@ class BasicCommandLineUserInterface implements BasicUserInterface
 
     public static function message(string $message)
     {
-        echo ($message . PHP_EOL);
+        echo($message . PHP_EOL);
     }
 
     public static function confirmation(string $prompt = null)

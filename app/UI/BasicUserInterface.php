@@ -15,9 +15,15 @@ interface BasicUserInterface
         'Once upon a time there was a great hero, called Orderus,', 'with some strengths and weaknesses, as all heroes have.',
         'After battling all kinds of monsters for more than a hundred years,', 'Orderus is now embarking on a new journey...', ''];
     const NEW_ENCOUNTER_TEXT = ['As Orderus walks the ever-green forests of Emagia, he encounters a wild beast!'];
-    const BATTLE_START_TEXT = ['   ~ ~ ~ FIGHT! ~ ~ ~'];
-    const GAME_OVER_TEXT = ['Oh no!', 'Orderus has been slain!', 'GAME OVER', ''];
-    const GOODBYE_TEXT = ['Goodbye!'];
+    const BATTLE_START_TEXT = ['', '    ~ ~ ~ FIGHT! ~ ~ ~'];
+    const BATTLE_WON_TEXT = ['     Congratulations!', 'Orderus has defeated the Beast!', '     * BATTLE WON * ',
+        'Kill Streak increased.', ''];
+    const BATTLE_INCONCLUSIVE_TEXT = ['After 20 rounds the Beast got bored and strolled away.',
+        'Orderus has survived, but I would\'t call this a glorious victory.',
+        'You may continue but will gain no points for this battle.', ''];
+    const GAME_OVER_TEXT = ['         Oh no!', 'Orderus has been killed!', '     * GAME OVER * ', (' [*] R.I.P. Orderus  '), ''];
+    const KILLSTREAK_CONGRATULATORY_TEXT = ['Congratulations! You managed to achieve a Kill Streak of:'];
+    const GOODBYE_TEXT = ['Until next time.', 'Goodbye!', '', ''];
 
     /**
      * Display a multi part message to the user

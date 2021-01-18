@@ -1,6 +1,6 @@
 <?php
 
-//simple Class Autoloader
+// simple Class Autoloader
 spl_autoload_register(function ($class_name) {
     include $class_name . '.php';
 });
@@ -11,16 +11,17 @@ use Character\Orderus as Hero;
 use Character\WildBeast as Beast;
 
 UserInterface::multipartMessage(UserInterface::INTRODUCTION_TEXT);
+$killStreak = 0;
 
-// Looped sequence of battles
+// looped sequence of battles
 do {
-    //Initialize Battle
+    // initialize Battle
     UserInterface::multipartMessage(UserInterface::NEW_ENCOUNTER_TEXT);
 
     $hero = new Hero();
     $beast = new Beast();
 
-    //Decide initiative
+    // decide initiative
     GameEngine::whoGoesFirst($hero, $beast);
     if ($hero->getInitiative()) {
         UserInterface::message($hero::NAME . ' gets initiative and will attack first');
@@ -28,28 +29,48 @@ do {
         UserInterface::message($beast::NAME . ' gets initiative and will attack first');
     }
 
-    //Single Battle Loop = 20 turns
+    // single Battle Loop = 20 turns
     UserInterface::multipartMessage(UserInterface::BATTLE_START_TEXT);
     for ($i = 1; $i <= 20; $i++) {
         if ($hero->getInitiative()) {
             UserInterface::message('(' . $i . ') ' . $hero::NAME . '\'s turn');
-            $messages = GameEngine::enactTurn($hero,$beast);
+            $messages = GameEngine::enactTurn($hero, $beast);
         } else {
             UserInterface::message('(' . $i . ') ' . $beast::NAME . '\'s turn');
-            $messages = GameEngine::enactTurn($beast,$hero);
+            $messages = GameEngine::enactTurn($beast, $hero);
         }
+
         UserInterface::multipartMessage($messages);
+
+        // stop the Battle is any of the participants gets killed
+        if ($hero->getHealth() <= 0 || $beast->getHealth() <= 0) {
+            break;
+        }
     }
 
-    //Win = Increase Kill Streak
-    echo PHP_EOL . 'Orderus wins!' . PHP_EOL;
-    $continueCondition = UserInterface::confirmation('Would you like to continue?');
+    // decide Battle outcome
+    $outcome = GameEngine::battleOutcomeDecider($hero, $beast);
 
-    //Loose = Game Over
-    echo 'or Orderus has been defeated. :-(' . PHP_EOL;
-    $continueCondition = false;
+    if ($outcome === 'win') {
+        $killStreak++;
+        UserInterface::multipartMessage(UserInterface::BATTLE_WON_TEXT);
+        $continueCondition = UserInterface::confirmation('Would you like to continue?');
+    } elseif ($outcome === 'draw') {
+        UserInterface::multipartMessage(UserInterface::BATTLE_INCONCLUSIVE_TEXT);
+        $continueCondition = UserInterface::confirmation('Would you like to continue?');
+    } elseif ($outcome === 'defeat') {
+        UserInterface::multipartMessage(UserInterface::GAME_OVER_TEXT);
+        $continueCondition = false;
+    } else {
+        // this is not a proper outcome
+        throw new LogicException('Battle ended in unexpected outcome');
+    }
 
 } while ($continueCondition === true);
 
 //Outro
-echo PHP_EOL . 'BYE!';
+//TODO: implement a High Score logic
+UserInterface::multipartMessage(UserInterface::KILLSTREAK_CONGRATULATORY_TEXT);
+UserInterface::message($killStreak);
+UserInterface::multipartMessage(UserInterface::GOODBYE_TEXT);
+
