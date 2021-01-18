@@ -27,20 +27,49 @@ final class ImpartialRefereeTest extends TestCase
     }
 
     /**
+     * @dataProvider whoGoesFirstDataProvider
+     *
+     * @param AbstractGameCharacter $hero
+     * @param AbstractGameCharacter $beast
+     * @param string $expected
+     */
+    public function testWhoGoesFirst(AbstractGameCharacter $hero, AbstractGameCharacter $beast, string $expected)
+    {
+        // use the whoGoesFirst function
+        ImpartialReferee::whoGoesFirst($hero, $beast);
+
+        if ($expected === 'hero') {
+            // we were expecting the hero to start the battle
+            $this->assertTrue($hero->getInitiative());
+            $this->assertFalse($beast->getInitiative());
+        } elseif ($expected === 'beast') {
+            // we were expecting the beast to start the battle
+            $this->assertTrue($beast->getInitiative());
+            $this->assertFalse($hero->getInitiative());
+        } else {
+            // well there is not really a third party here is there?
+            $this->fail('Failed to expect a hero or beast to start battle, who were you expecting?');
+        }
+    }
+
+    /**
      * @dataProvider enactTurnDataProvider
      *
      * @param AbstractGameCharacter $attacker
      * @param AbstractGameCharacter $defender
-     * @param string|bool $expected
      */
-    public function testEnactTurn(AbstractGameCharacter $attacker, AbstractGameCharacter $defender, $expected)
+    public function testEnactTurn(AbstractGameCharacter $attacker, AbstractGameCharacter $defender)
     {
         // get attacker's and defender's HP before the turn
         $attackerHpBefore = $attacker->getHealth();
         $defenderHpBefore = $defender->getHealth();
 
         // use the enactTurn function
-        ImpartialReferee::enactTurn($attacker, $defender);
+        $result = ImpartialReferee::enactTurn($attacker, $defender);
+
+        // check the result is a list of messages and it is not empty
+        $this->assertIsArray($result);
+        $this->assertNotEmpty($result);
 
         // get attacker's and defender's HP after the turn
         $attackerHpAfter = $attacker->getHealth();
@@ -50,7 +79,28 @@ final class ImpartialRefereeTest extends TestCase
         $this->assertEquals($attackerHpBefore, $attackerHpAfter);
 
         // assert that the defender's HP did go down or is at least the same (if attack fully dodged - unless you want to introduce some healing skills in the future)
-        $this->assertGreaterThan($defenderHpAfter, $defenderHpBefore);
+        $this->assertGreaterThanOrEqual($defenderHpAfter, $defenderHpBefore);
+
+        // assert that the attacker lost initiative
+        $this->assertFalse($attacker->getInitiative());
+
+        // assert that the defender gained initiative
+        $this->assertTrue($defender->getInitiative());
+    }
+
+    /**
+     * @dataProvider battleOutcomeDeciderDataProvider
+     *
+     * @param AbstractGameCharacter $hero
+     * @param AbstractGameCharacter $beast
+     * @param string $expected
+     */
+    public function testBattleOutcomeDecider(AbstractGameCharacter $hero, AbstractGameCharacter $beast, string $expected)
+    {
+        // use the battleOutcomeDecider function
+        $result = ImpartialReferee::battleOutcomeDecider($hero, $beast);
+
+        $this->assertEquals($result, $expected);
     }
 
     public function procDataProvider()
@@ -63,6 +113,31 @@ final class ImpartialRefereeTest extends TestCase
             [75, [true, false]], // with 75% luck, could succeed, could fail
             [50, [true, false]], // with 50% luck, could succeed, could fail
             [25, [true, false]], // with 25% luck, could succeed, could fail
+        ];
+    }
+
+    public function whoGoesFirstDataProvider()
+    {
+        $fastHero = new Orderus();
+        $fastHero->alterSpeed(50);
+        $slowHero = new Orderus();
+        $slowHero->alterSpeed(-50);
+        $averageSpeedHeroWithLuck = new Orderus();
+        $averageSpeedHeroWithoutLuck = clone($averageSpeedHeroWithLuck);
+        $averageSpeedHeroWithLuck->alterLuck(50);
+        $fastBeast = new WildBeast();
+        $fastBeast->alterSpeed(50);
+        $slowBeast = new WildBeast();
+        $slowBeast->alterSpeed(-50);
+        $averageSpeedBeastWithLuck = new WildBeast();
+        $averageSpeedBeastWithoutLuck = clone($averageSpeedBeastWithLuck);
+        $averageSpeedBeastWithLuck->alterLuck(50);
+
+        return [
+            [$fastHero, $slowBeast, 'hero'],
+            [$slowHero, $fastBeast, 'beast'],
+            [$averageSpeedBeastWithLuck, $averageSpeedBeastWithoutLuck, 'hero'],
+            [$averageSpeedHeroWithoutLuck, $averageSpeedHeroWithLuck, 'beast'],
         ];
     }
 
@@ -91,17 +166,35 @@ final class ImpartialRefereeTest extends TestCase
          */
 
         return [
-            [$randomHero1, $randomBeast1, 'uncertain'], // a typical first turn, in a normal battle, no certain outcome
-            [$randomHero1, $randomBeast2, 'uncertain'], // a typical first turn, in a normal battle, no certain outcome
-            [$randomHero2, $randomBeast1, 'uncertain'], // a typical first turn, in a normal battle, no certain outcome
-            [$randomHero2, $randomBeast2, 'uncertain'], // a typical first turn, in a normal battle, no certain outcome
-            [$randomHero1, $randomHero2, 'uncertain'], // hero vs hero? I don't see why not, no certain outcome
-            [$randomBeast1, $randomBeast2, 'uncertain'], // beast vs beast? I don't see why not, no certain outcome
-            [$randomBeast1, $criticallyWoundedHero, false], // hero is badly wounded, battle will end in 1 hit
-            [$randomHero1, $criticallyWoundedBeast, false], // beast is badly wounded, battle will end in 1 hit
-            [$superPowerfulHero, $randomBeast1, false], // hero is overpowered, battle will end in 1 hit
-            [$randomHero1, $unbeatableBeast, true], // beast is overpowered, battle will not end in this turn
-            [$randomHero2, $unbeatableBeast, true], // beast is overpowered, battle will not end in this turn
+            [$randomHero1, $randomBeast1], // a typical first turn, in a normal battle, no certain outcome
+            [$randomHero1, $randomBeast2], // a typical first turn, in a normal battle, no certain outcome
+            [$randomHero2, $randomBeast1], // a typical first turn, in a normal battle, no certain outcome
+            [$randomHero2, $randomBeast2], // a typical first turn, in a normal battle, no certain outcome
+            [$randomHero1, $randomHero2], // hero vs hero? I don't see why not, no certain outcome
+            [$randomBeast1, $randomBeast2], // beast vs beast? I don't see why not, no certain outcome
+            [$randomBeast1, $criticallyWoundedHero], // hero is badly wounded, battle will end in 1 hit
+            [$randomHero1, $criticallyWoundedBeast], // beast is badly wounded, battle will end in 1 hit
+            [$superPowerfulHero, $randomBeast1], // hero is overpowered, battle will end in 1 hit
+            [$randomHero1, $unbeatableBeast], // beast is overpowered, battle will not end in this turn
+            [$randomHero2, $unbeatableBeast], // beast is overpowered, battle will not end in this turn
+        ];
+    }
+
+    public function battleOutcomeDeciderDataProvider()
+    {
+        $freshHero = new Orderus();
+        $criticallyWoundedHero = new Orderus();
+        $criticallyWoundedHero->inflictWound(Orderus::MAX_HEALTH);
+        $freshBeast = new WildBeast();
+        $criticallyWoundedBeast = new WildBeast();
+        $criticallyWoundedBeast->inflictWound(WildBeast::MAX_HEALTH);
+
+        return [
+            [$freshHero, $criticallyWoundedBeast, 'win'],
+            [$freshHero, $freshBeast, 'draw'],
+            [$criticallyWoundedHero, $freshBeast, 'defeat'],
+            [$criticallyWoundedHero, $criticallyWoundedHero, 'defeat'], // might be called a draw by some,
+            // but if the hero dies I call it a defeat, even if the beast is slain in the process as well.
         ];
     }
 }
