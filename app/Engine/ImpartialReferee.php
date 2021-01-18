@@ -3,6 +3,7 @@
 namespace Engine;
 
 use Character\AbstractGameCharacter;
+use UI\BasicCommandLineUserInterface as UserInterface;
 
 class ImpartialReferee
 {
@@ -13,30 +14,76 @@ class ImpartialReferee
      */
     public static function proc(int $luck)
     {
-        return $luck >= rand(0,100);
+        return $luck >= rand(0, 100);
+    }
+
+    /**
+     * Choose who starts the Battle by attacking first (based on speed first, luck second, and a coin toss if both are
+     * completely equal)
+     * @param AbstractGameCharacter $hero the hero
+     * @param AbstractGameCharacter $beast the beast
+     */
+    public static function whoGoesFirst(AbstractGameCharacter &$hero, AbstractGameCharacter &$beast)
+    {
+        if ($hero->getSpeed() === $beast->getSpeed()) {
+            if ($hero->getLuck() === $beast->getLuck()) {
+                if (rand(0, 1)) {
+                    $hero->isAboutToAttack();
+                } else {
+                    $beast->isAboutToAttack();
+                }
+            } elseif ($hero->getLuck() > $beast->getLuck()) {
+                $hero->isAboutToAttack();
+            } else {
+                $beast->isAboutToAttack();
+            }
+        } elseif ($hero->getSpeed() > $beast->getSpeed()) {
+            $hero->isAboutToAttack();
+        } elseif ($hero->getSpeed() < $beast->getSpeed()) {
+            $beast->isAboutToAttack();
+        }
     }
 
     /**
      * Enact a single turn of combat
      * @param AbstractGameCharacter $attacker the attacking character
      * @param AbstractGameCharacter $defender the defending character
-     * @return bool
+     * @return array (a detailed list of messages to be displayed by the interface object
      */
-    public static function enactTurn(AbstractGameCharacter $attacker, AbstractGameCharacter $defender)
+    public static function enactTurn(AbstractGameCharacter &$attacker, AbstractGameCharacter &$defender)
     {
-        // TODO: Implement the actual logic - something along the lines:
-        // 1. get attacker's str
-        // 2. check for attacker's offensive abilities
-        // 3. modify attack accordingly
-        // 4. get defender's def
-        // 5. check for defender's defensive abilities
-        // 6. modify attack accordingly
-        // 7. calculate final damage
-        // 8. inflict wound
-        // 9. get defender's HP after attack and if < 0 set as defeated
+        $hitList = $attacker->attack();
+        $updatedHitList = $defender->defend($hitList);
 
-        $outcome = 'undecided/continue or win/lose/end';
+        $result = $updatedHitList['introductoryMessages'];
 
-        return $outcome;
+        foreach ($updatedHitList['hits'] as $hit) {
+            $result[] = $hit['messages'];
+            $defender->inflictWound($hit['damage']);
+        }
+
+        $attacker->isNotAboutToAttack();
+        $defender->isAboutToAttack();
+
+        return $result;
+    }
+
+    /**
+     * Decide the outcome of the Battle based on the participants health
+     * (if both are alive assume the 20 turn limit has elapsed and declare a 'draw')
+     * If hero is dead I call it a defeat, even if the beast is slain in the process as well.
+     * @param AbstractGameCharacter $hero the hero
+     * @param AbstractGameCharacter $beast the beast
+     * @return string (namely 'win', 'draw' or 'defeat')
+     */
+    public static function battleOutcomeDecider(AbstractGameCharacter $hero, AbstractGameCharacter $beast)
+    {
+        if ($hero->getHealth() <= 0) {
+            return 'defeat';
+        } elseif ($beast->getHealth() <= 0) {
+            return 'win';
+        } else {
+            return 'draw';
+        }
     }
 }
