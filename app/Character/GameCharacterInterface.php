@@ -76,6 +76,12 @@ interface GameCharacterInterface
     public function getLuck();
 
     /**
+     * Get Character strength property
+     * @return bool
+     */
+    public function getInitiative();
+
+    /**
      * Lower Character health parameter
      * @param int $damage Specify the amount of damage dealt to the Character
      * @return self
@@ -120,4 +126,16 @@ interface GameCharacterInterface
      * @return self
      */
     public function alterLuck(int $value, ?string $method = 'absolute');
+
+    /**
+     * Set Character initiative property to true (has gained initiative; is about to attack next turn)
+     * @return self
+     */
+    public function isAboutToAttack();
+
+    /**
+     * Set Character initiative property to false (has lost initiative; is not about to attack next turn)
+     * @return self
+     */
+    public function isNotAboutToAttack();
 }

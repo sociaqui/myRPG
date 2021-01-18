@@ -28,6 +28,7 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
     protected $defence;
     protected $speed;
     protected $luck;
+    protected $initiative;
 
     public function __construct()
     {
@@ -45,6 +46,7 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
         $this->defence = rand(static::MIN_DEFENCE, static::MAX_DEFENCE);
         $this->speed = rand(static::MIN_SPEED, static::MAX_SPEED);
         $this->luck = rand(static::MIN_LUCK, static::MAX_LUCK);
+        $this->initiative = false;
     }
 
     /**
@@ -168,6 +170,14 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
     /**
      * @inheritDoc
      */
+    public function getInitiative()
+    {
+        return $this->initiative;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function inflictWound(int $damage)
     {
         $this->health -= $damage;
@@ -244,6 +254,24 @@ abstract class AbstractGameCharacter implements GameCharacterInterface
                 $this->luck *= $value;
                 break;
         }
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isAboutToAttack()
+    {
+        $this->initiative = true;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isNotAboutToAttack()
+    {
+        $this->initiative = false;
         return $this;
     }
 }
